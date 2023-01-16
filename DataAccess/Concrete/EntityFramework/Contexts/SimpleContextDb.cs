@@ -7,7 +7,7 @@ namespace DataAccess.Concrete.EntityFramework.Contexts
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Database=testdb;Username=test;Password=Asd159123!;Port=5432;Persist Security Info=False");
+            optionsBuilder.UseNpgsql("Host=localhost;Database=chatdb;Username=user;Password=Asd159123!;Port=5432;Persist Security Info=False");
         }
 
         public DbSet<User> Users { get; set; }
