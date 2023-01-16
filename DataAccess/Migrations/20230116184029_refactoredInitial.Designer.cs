@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(SimpleContextDb))]
-    [Migration("20230116110918_initial")]
-    partial class initial
+    [Migration("20230116184029_refactoredInitial")]
+    partial class refactoredInitial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -85,6 +85,9 @@ namespace DataAccess.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("text");
 
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
+
                     b.Property<DateTime?>("ForgotPasswordRequestDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -97,7 +100,7 @@ namespace DataAccess.Migrations
                     b.Property<bool>("IsForgotPasswordComplete")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("LastName")
                         .HasColumnType("text");
 
                     b.Property<byte[]>("PasswordHash")

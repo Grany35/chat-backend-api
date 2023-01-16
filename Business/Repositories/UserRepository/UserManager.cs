@@ -41,10 +41,19 @@ namespace Business.Repositories.UserRepository
 
             user.ConfirmValue = confirmValue;
 
+            
             await _userDal.AddAsync(user);
 
+            var userOperationClaim = new UserOperationClaim
+            {
+                OperationClaimId = 2,
+                UserId = user.Id
+            };
+
+            await _userOperationClaimDal.AddAsync(userOperationClaim);
+
             //await SendConfirmUserMail(user.Email);
-        }        
+        }
 
         public async Task<string> CreateConfirmValue()
         {
@@ -72,7 +81,6 @@ namespace Business.Repositories.UserRepository
                 PasswordHash=passwordHash,
                 PasswordSalt=paswordSalt,
             };
-                
             return user;
         }
 

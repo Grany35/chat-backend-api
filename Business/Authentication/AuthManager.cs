@@ -23,8 +23,8 @@ namespace Business.Authentication
             _userService = userService;
             _tokenHandler = tokenHandler;
         }
-        
-        public async Task<Token> Login(LoginAuthDto loginDto)
+
+        public async Task<AuthResponseDto> Login(LoginAuthDto loginDto)
         {
             var user = await _userService.GetByEmail(loginDto.Email);
             if (user == null)
@@ -38,11 +38,30 @@ namespace Business.Authentication
 
             if (result)
             {
-                Token token = new();
-                token = _tokenHandler.CreateToken(user, operationClaims);
-                return  token;
+                var token = _tokenHandler.CreateToken(user, operationClaims);
+
+                return ToAuthResponseDto(user, token, operationClaims)
+;
             }
             throw new BusinessException("Kullanıcı maili ya da şifre bilgisi yanlış");
+        }
+
+        private static AuthResponseDto ToAuthResponseDto(User user, Token token, List<OperationClaim> operationClaims)
+        {
+            AuthResponseDto dto = new AuthResponseDto
+            {
+                AccessToken = token.AccessToken,
+                Expiration = token.Expiration,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                Id = user.Id,
+                LastName = user.LastName,
+            };
+            dto.UserOperationClaimDtos = operationClaims.Select(x => new UserOperationClaimDto
+            {
+                Name = x.Name
+            }).ToList();
+            return dto;
         }
 
         [ValidationAspect(typeof(AuthValidator))]
@@ -50,7 +69,7 @@ namespace Business.Authentication
         {
             await CheckIfEmailExists(registerDto.Email);
 
-             await _userService.Add(registerDto);
+            await _userService.Add(registerDto);
         }
 
         private async Task CheckIfEmailExists(string email)

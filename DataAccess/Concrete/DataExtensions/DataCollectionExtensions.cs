@@ -20,8 +20,17 @@ namespace DataAccess.Concrete.DataExtensions
                 {
                     OperationClaim operationClaim = new OperationClaim
                     {
+                        Id=1,
                         Name = "Admin"
                     };
+
+                    OperationClaim operationClaimOfUser = new OperationClaim
+                    {
+                        Id = 2,
+                        Name = "User"
+                    };
+                    dataContext.OperationClaims.Add(operationClaimOfUser);
+                    dataContext.SaveChanges();
                     if (!dataContext.Users.Any())
                     {
                         byte[] passwordHash, paswordSalt;

@@ -7,6 +7,6 @@ namespace Business.Abstract
     public interface IAuthService
     {
         Task Register(RegisterAuthDto registerDto);
-        Task<Token> Login(LoginAuthDto loginDto);
+        Task<AuthResponseDto> Login(LoginAuthDto loginDto);
     }
 }
