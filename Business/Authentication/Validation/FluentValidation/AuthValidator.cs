@@ -7,7 +7,8 @@ namespace Business.ValidationRules.FluentValidation
     {
         public AuthValidator()
         {
-            RuleFor(p => p.Name).NotEmpty().WithMessage("Kullanıcı adı boş olamaz");
+            RuleFor(p => p.FirstName).NotEmpty().WithMessage("Kullanıcı adı boş olamaz");
+            RuleFor(p => p.LastName).NotEmpty().WithMessage("Kullanıcı Soyadı boş olamaz");
             RuleFor(p => p.Email).NotEmpty().WithMessage("Mail adresi boş olamaz");
             RuleFor(p => p.Email).EmailAddress().WithMessage("Geçerli bir mail adresi yazın");
             RuleFor(p => p.Password).NotEmpty().WithMessage("Şifre boş olamaz");

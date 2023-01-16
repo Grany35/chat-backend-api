@@ -67,7 +67,8 @@ namespace Business.Repositories.UserRepository
             User user = new User()
             {
                 Email=registerDto.Email,
-                Name=registerDto.Name,
+                FirstName=registerDto.FirstName,
+                LastName=registerDto.LastName,
                 PasswordHash=passwordHash,
                 PasswordSalt=paswordSalt,
             };

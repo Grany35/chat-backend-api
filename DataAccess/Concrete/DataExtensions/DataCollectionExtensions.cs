@@ -8,8 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace DataAccess.Concrete.DataExtensions
 {
-	public static class DataCollectionExtensions
-	{
+    public static class DataCollectionExtensions
+    {
         public static IServiceCollection AddInitialUser(this IServiceCollection services)
         {
             using (var scope = services.BuildServiceProvider().CreateScope())
@@ -30,7 +30,8 @@ namespace DataAccess.Concrete.DataExtensions
                         User user = new User()
                         {
                             Email = "ogun.ergin35@gmail.com",
-                            Name = "Admin",
+                            FirstName = "Admin",
+                            LastName = "LastName",
                             PasswordHash = passwordHash,
                             PasswordSalt = paswordSalt,
                         };

@@ -23,7 +23,7 @@ builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",
-        builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+        builder => builder.WithOrigins("*").AllowAnyHeader().AllowAnyMethod());
 });
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
@@ -67,7 +67,7 @@ app.ConfigureCustomExcepitonMiddleware();
 
 app.UseCors("AllowOrigin");
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 
