@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace DataAccess.Migrations
 {
-    public partial class refactoredInitial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -56,7 +56,9 @@ namespace DataAccess.Migrations
                     IsConfirm = table.Column<bool>(type: "boolean", nullable: false),
                     ForgotPasswordValue = table.Column<string>(type: "text", nullable: true),
                     ForgotPasswordRequestDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IsForgotPasswordComplete = table.Column<bool>(type: "boolean", nullable: false)
+                    IsForgotPasswordComplete = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessToken = table.Column<string>(type: "text", nullable: true),
+                    ExpirationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

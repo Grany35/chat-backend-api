@@ -40,8 +40,11 @@ namespace Business.Authentication
             {
                 var token = _tokenHandler.CreateToken(user, operationClaims);
 
-                return ToAuthResponseDto(user, token, operationClaims)
-;
+                user.AccessToken = token.AccessToken;
+                user.ExpirationDate = token.Expiration;
+                await _userService.Update(user);
+
+                return ToAuthResponseDto(user, token, operationClaims);
             }
             throw new BusinessException("Kullanıcı maili ya da şifre bilgisi yanlış");
         }
@@ -57,7 +60,7 @@ namespace Business.Authentication
                 Id = user.Id,
                 LastName = user.LastName,
             };
-            dto.UserOperationClaimDtos = operationClaims.Select(x => new UserOperationClaimDto
+            dto.UserOperationClaims = operationClaims.Select(x => new UserOperationClaimDto
             {
                 Name = x.Name
             }).ToList();

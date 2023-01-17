@@ -10,6 +10,7 @@ using Core.Business;
 using Core.Utilities.Hashing;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
+using Core.Utilities.Security.JWT;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dtos;
@@ -23,13 +24,17 @@ namespace Business.Repositories.UserRepository
         private readonly IFileService _fileService;
         private readonly IEmailParameterService _emailParameterService;
         private readonly IUserOperationClaimDal _userOperationClaimDal;
+        private readonly ITokenHandler _tokenHandler;
+        private readonly IOperationClaimDal _operationClaimDal;
 
-        public UserManager(IUserDal userDal, IFileService fileService, IEmailParameterService emailParameterService, IUserOperationClaimDal userOperationClaimDal)
+        public UserManager(IUserDal userDal, IFileService fileService, IEmailParameterService emailParameterService, IUserOperationClaimDal userOperationClaimDal, ITokenHandler tokenHandler, IOperationClaimDal operationClaimDal)
         {
             _userDal = userDal;
             _fileService = fileService;
             _emailParameterService = emailParameterService;
             _userOperationClaimDal = userOperationClaimDal;
+            _tokenHandler = tokenHandler;
+            _operationClaimDal = operationClaimDal;
         }
 
         //[RemoveCacheAspect("IUserService.Get")]
@@ -41,7 +46,6 @@ namespace Business.Repositories.UserRepository
 
             user.ConfirmValue = confirmValue;
 
-            
             await _userDal.AddAsync(user);
 
             var userOperationClaim = new UserOperationClaim
@@ -52,7 +56,22 @@ namespace Business.Repositories.UserRepository
 
             await _userOperationClaimDal.AddAsync(userOperationClaim);
 
+            await UpdateUserToken(user);
+
             //await SendConfirmUserMail(user.Email);
+        }
+
+        private async Task UpdateUserToken(User user)
+        {
+            var operationClaims = new List<OperationClaim>();
+            var initialOperationClaim = await _operationClaimDal.GetAllAsync(x => x.Id == 2);
+            operationClaims.AddRange(initialOperationClaim);
+
+            var token = _tokenHandler.CreateToken(user, operationClaims);
+
+            user.AccessToken = token.AccessToken;
+            user.ExpirationDate = token.Expiration;
+            await _userDal.UpdateAsync(user);
         }
 
         public async Task<string> CreateConfirmValue()
@@ -75,11 +94,11 @@ namespace Business.Repositories.UserRepository
 
             User user = new User()
             {
-                Email=registerDto.Email,
-                FirstName=registerDto.FirstName,
-                LastName=registerDto.LastName,
-                PasswordHash=passwordHash,
-                PasswordSalt=paswordSalt,
+                Email = registerDto.Email,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                PasswordHash = passwordHash,
+                PasswordSalt = paswordSalt,
             };
             return user;
         }
@@ -90,7 +109,7 @@ namespace Business.Repositories.UserRepository
             return result;
         }
 
-        [SecuredAspect()]
+        //[SecuredAspect()]
         [ValidationAspect(typeof(UserValidator))]
         //[RemoveCacheAspect("IUserService.Get")]
         public async Task Update(User user)
@@ -113,9 +132,23 @@ namespace Business.Repositories.UserRepository
             return await _userDal.GetAllAsync();
         }
 
-        public async Task<User> GetById(int id)
+        public async Task<AuthResponseDto> GetById(int id)
         {
-            return await _userDal.GetAsync(p => p.Id == id);
+            var user = await _userDal.GetAsync(p => p.Id == id,
+                include: x =>
+                x.Include(y => y.UserOperationClaims)
+                .ThenInclude(t => t.OperationClaim));
+            AuthResponseDto dto = new AuthResponseDto
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                UserOperationClaims = user.UserOperationClaims.Select(a => new UserOperationClaimDto { Name = a.OperationClaim.Name }).ToList(),
+                AccessToken = user.AccessToken,
+                Expiration = user.ExpirationDate
+            };
+            return dto;
         }
 
         public async Task<User> GetByIdForAuth(int id)
@@ -150,8 +183,8 @@ namespace Business.Repositories.UserRepository
                 throw new BusinessException(UserMessages.ForgotPasswordValueIsNotValid);
 
 
-                IsForgotPasswordValueUsed(user);
-                //IsForgotPasswordDateEnded(user);
+            IsForgotPasswordValueUsed(user);
+            //IsForgotPasswordDateEnded(user);
 
             byte[] passwordHash, paswordSalt;
             HashingHelper.CreatePassword(createANewPasswordDto.NewPassword, out passwordHash, out paswordSalt);
@@ -159,10 +192,10 @@ namespace Business.Repositories.UserRepository
             user.PasswordHash = passwordHash;
             user.PasswordSalt = paswordSalt;
             await _userDal.UpdateAsync(user);
-        }        
+        }
 
         public static void IsForgotPasswordValueUsed(User user)
-        {            
+        {
             if (user.IsForgotPasswordComplete)
                 throw new BusinessException(UserMessages.ForgotPasswordValueIsUsed);
         }
@@ -183,7 +216,7 @@ namespace Business.Repositories.UserRepository
 
         public async Task<List<OperationClaim>> GetUserOperationClaims(int userId)
         {
-            List<UserOperationClaim> userOperationClaims =await _userOperationClaimDal.GetAllAsync(x => x.UserId == userId,
+            List<UserOperationClaim> userOperationClaims = await _userOperationClaimDal.GetAllAsync(x => x.UserId == userId,
                 include: i => i.Include(i => i.OperationClaim));
             return userOperationClaims.Select(x => new OperationClaim
             {
@@ -194,7 +227,7 @@ namespace Business.Repositories.UserRepository
 
         public async Task ConfirmUser(string confirmValue)
         {
-            var user = await _userDal.GetAsync(p=> p.ConfirmValue == confirmValue);
+            var user = await _userDal.GetAsync(p => p.ConfirmValue == confirmValue);
             if (user.IsConfirm)
             {
                 throw new BusinessException(UserMessages.UserAlreadyConfirm);
@@ -214,7 +247,7 @@ namespace Business.Repositories.UserRepository
         //    }
 
         //    string forgotPasswordValue = await CreateForgotPasswordValue();
-            
+
 
         //    var emailParameter = await _emailParameterService.get();
         //    if (emailParameter != null)

@@ -13,6 +13,8 @@
         public string? ForgotPasswordValue { get; set;}
         public DateTime? ForgotPasswordRequestDate { get; set; }
         public bool IsForgotPasswordComplete { get; set; }
+        public string AccessToken { get; set; }
+        public DateTime ExpirationDate { get; set; }
 
         public ICollection<UserOperationClaim> UserOperationClaims { get; set; }
 

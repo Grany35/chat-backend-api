@@ -17,7 +17,7 @@ namespace Business.Repositories.UserRepository
         Task<List<User>> GetList();
         Task<User> GetByEmail(string email);
         Task<List<OperationClaim>> GetUserOperationClaims(int userId);
-        Task<User> GetById(int id);
+        Task<AuthResponseDto> GetById(int id);
         Task<User> GetByIdForAuth(int id);
     }
 }

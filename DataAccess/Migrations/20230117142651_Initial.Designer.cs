@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(SimpleContextDb))]
-    [Migration("20230116184029_refactoredInitial")]
-    partial class refactoredInitial
+    [Migration("20230117142651_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -79,11 +79,17 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AccessToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("ConfirmValue")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");

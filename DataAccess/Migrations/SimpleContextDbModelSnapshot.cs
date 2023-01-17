@@ -77,11 +77,17 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AccessToken")
+                        .HasColumnType("text");
+
                     b.Property<string>("ConfirmValue")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
