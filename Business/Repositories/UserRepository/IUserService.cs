@@ -1,6 +1,7 @@
 ﻿using Core.Utilities.Result.Abstract;
 using Entities.Concrete;
 using Entities.Dtos;
+using Microsoft.AspNetCore.Http;
 
 namespace Business.Repositories.UserRepository
 {
@@ -19,5 +20,7 @@ namespace Business.Repositories.UserRepository
         Task<List<OperationClaim>> GetUserOperationClaims(int userId);
         Task<AuthResponseDto> GetById(int id);
         Task<User> GetByIdForAuth(int id);
+        Task UpdateUserSettings(UserUpdateDto dto);
+        Task<string> UpdateUserPhoto(ProfileImageUpdateDto dto);
     }
 }

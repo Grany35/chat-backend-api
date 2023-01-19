@@ -1,11 +1,53 @@
 ﻿using Business.Abstract;
 using Microsoft.AspNetCore.Http;
 using System.Net;
+using static Business.Utilities.Constants;
+using Core.Utilities.Result.Abstract;
+using Core.Utilities.Result.Concrete;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Business.Concrete
 {
     public class FileManager : IFileService
     {
+        private IWebHostEnvironment _environment;
+
+        public FileManager(IWebHostEnvironment webHostEnvironment)
+        {
+            _environment = webHostEnvironment;
+        }
+
+        public IResult SaveFile(IFormFile file)
+        {
+            if (file is null) return new ErrorResult("Dosya boş olamaz");
+
+            var fileName = GetRandomFileName("Image_", file.FileName);
+            try
+            {
+                var path = GetFilePath(fileName);
+                using var stream = new FileStream(path, FileMode.Create);
+                file.CopyTo(stream);
+            }
+            catch (Exception ex)
+            {
+                return new ErrorResult("Kaydedilemedi");
+            }
+
+            return new SuccessResult(message: fileName);
+        }
+
+        public string GetFilePath(string fileName)
+        {
+            return Path.Combine("", _environment.WebRootPath + "/" + UploadPath + fileName);
+        }
+
+        private string GetRandomFileName(string prefix, string fileName)
+        {
+            FileInfo fileInfo = new(fileName);
+            return prefix + DateTime.UtcNow.Ticks + fileInfo.Extension;
+        }
+
+
         public string FileSaveToServer(IFormFile file, string filePath)
         {
             var fileFormat = file.FileName.Substring(file.FileName.LastIndexOf('.'));
@@ -16,6 +58,7 @@ namespace Business.Concrete
             {
                 file.CopyTo(stream);
             }
+
             return fileName;
         }
 

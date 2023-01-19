@@ -77,6 +77,9 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("About")
+                        .HasColumnType("text");
+
                     b.Property<string>("AccessToken")
                         .HasColumnType("text");
 
@@ -112,6 +115,9 @@ namespace DataAccess.Migrations
 
                     b.Property<byte[]>("PasswordSalt")
                         .HasColumnType("bytea");
+
+                    b.Property<string>("ProfileImageUrl")
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

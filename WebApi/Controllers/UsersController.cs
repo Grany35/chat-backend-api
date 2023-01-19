@@ -38,12 +38,26 @@ namespace WebApi.Controllers
             await _userService.Update(user);
             return NoContent();
         }
+        
+        [HttpPost("update-usersettings")]
+        public async Task<IActionResult> UpdateUserSettings(UserUpdateDto dto)
+        {
+            await _userService.UpdateUserSettings(dto);
+            return NoContent();
+        }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> Delete(User user)
         {
             await _userService.Delete(user);
             return NoContent();
+        }
+        
+        [HttpPost("[action]")]
+        public async Task<IActionResult> UpdateProfileImage([FromForm]ProfileImageUpdateDto dto)
+        {
+           var result= await _userService.UpdateUserPhoto(dto);
+            return Ok(result);
         }
 
         //[HttpGet("[action]/{email}")]
