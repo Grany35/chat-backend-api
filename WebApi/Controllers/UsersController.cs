@@ -1,4 +1,5 @@
 ﻿using Business.Repositories.UserRepository;
+using Core.Utilities.Params;
 using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Mvc;
@@ -17,9 +18,9 @@ namespace WebApi.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetList()
+        public async Task<IActionResult> GetList([FromQuery]UserParams userParams)
         {
-            var result = await _userService.GetList();
+            var result = await _userService.GetList(userParams);
             return Ok(result);
         }
 

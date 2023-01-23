@@ -30,7 +30,8 @@ namespace Core.DataAccess.EntityFramework
             }
         }
 
-        public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
+        public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
         {
             using (var context = new TContext())
             {
@@ -39,13 +40,15 @@ namespace Core.DataAccess.EntityFramework
                 {
                     queryable = include(queryable);
                 }
+
                 return filter == null
                     ? await queryable.ToListAsync()
                     : await queryable.Where(filter).ToListAsync();
             }
         }
 
-        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
+        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
         {
             using (var context = new TContext())
             {
@@ -54,13 +57,17 @@ namespace Core.DataAccess.EntityFramework
                 {
                     queryable = include(queryable);
                 }
+
                 return await queryable.FirstOrDefaultAsync(filter);
             }
         }
 
-        public async Task<IPaginate<TEntity>> GetListByPaginateAsync(Expression<Func<TEntity, bool>> predicate = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null, Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, int index = 0, int size = 10, CancellationToken cancellationToken = default)
+        public async Task<IPaginate<TEntity>> GetListByPaginateAsync(Expression<Func<TEntity, bool>> predicate = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>> include = null, int index = 0,
+            int size = 10, CancellationToken cancellationToken = default)
         {
-            using(var context=new TContext())
+            using (var context = new TContext())
             {
                 IQueryable<TEntity> queryable = context.Set<TEntity>();
                 if (include != null) queryable = include(queryable);
@@ -69,7 +76,6 @@ namespace Core.DataAccess.EntityFramework
                     return await orderBy(queryable).ToPaginateAsync(index, size, 0, cancellationToken);
                 return await queryable.ToPaginateAsync(index, size, 0, cancellationToken);
             }
-            
         }
 
         public async Task UpdateAsync(TEntity entity)

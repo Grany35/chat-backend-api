@@ -9,6 +9,7 @@ using Core.Aspects.Performance;
 using Core.Aspects.Validation;
 using Core.Business;
 using Core.Utilities.Hashing;
+using Core.Utilities.Params;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using Core.Utilities.Security.JWT;
@@ -145,7 +146,7 @@ namespace Business.Repositories.UserRepository
             var result = _fileService.SaveFile(dto.File);
             user.ProfileImageUrl = result.Message;
             await _userDal.UpdateAsync(user);
-            return   UploadPath + result.Message;
+            return UploadPath + result.Message;
         }
 
         [SecuredAspect()]
@@ -158,9 +159,22 @@ namespace Business.Repositories.UserRepository
         //[SecuredAspect()]
         //[CacheAspect(60)]
         [PerformanceAspect(3)]
-        public async Task<List<User>> GetList()
+        public async Task<List<UserDto>> GetList(UserParams userParams)
         {
-            return await _userDal.GetAllAsync();
+            List<User> users = await _userDal.GetAllAsync();
+
+            IQueryable<UserDto> userDtos = users.Select(UserDto.ToDto).AsQueryable();
+
+            if (userParams.Keyword != null)
+            {
+                string lowerKeyword = userParams.Keyword.ToLower();
+                userDtos = userDtos.Where(p =>
+                    p.Email.ToLower().Contains(lowerKeyword) || p.FirstName.Contains(userParams.Keyword) ||
+                    p.LastName.ToLower().Contains(lowerKeyword) ||
+                    p.FirstName.ToLower().Contains(lowerKeyword));
+            }
+
+            return userDtos.ToList();
         }
 
         public async Task<AuthResponseDto> GetById(int id)
@@ -178,7 +192,9 @@ namespace Business.Repositories.UserRepository
                 UserOperationClaims = user.UserOperationClaims
                     .Select(a => new UserOperationClaimDto { Name = a.OperationClaim.Name }).ToList(),
                 AccessToken = user.AccessToken,
-                Expiration = user.ExpirationDate
+                Expiration = user.ExpirationDate,
+                ProfileImage = String.IsNullOrEmpty(user.ProfileImageUrl) ? null : UploadPath + user.ProfileImageUrl,
+                About = user.About
             };
             return dto;
         }

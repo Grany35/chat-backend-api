@@ -8,6 +8,8 @@ namespace Entities.Dtos
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string AccessToken { get; set; }
+        public string ProfileImage { get; set; }
+        public string About { get; set; }
         public DateTime Expiration { get; set; }
         public List<UserOperationClaimDto> UserOperationClaims { get; set; } = new List<UserOperationClaimDto>();
     }

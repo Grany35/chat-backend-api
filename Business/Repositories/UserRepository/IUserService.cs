@@ -1,4 +1,5 @@
-﻿using Core.Utilities.Result.Abstract;
+﻿using Core.Utilities.Params;
+using Core.Utilities.Result.Abstract;
 using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ namespace Business.Repositories.UserRepository
         Task ChangePassword(UserChangePasswordDto userChangePasswordDto);
         Task CreateANewPassword(CreateANewPasswordDto createANewPasswordDto);
         Task Delete(User user);
-        Task<List<User>> GetList();
+        Task<List<UserDto>> GetList(UserParams userParams);
         Task<User> GetByEmail(string email);
         Task<List<OperationClaim>> GetUserOperationClaims(int userId);
         Task<AuthResponseDto> GetById(int id);

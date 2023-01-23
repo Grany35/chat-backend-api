@@ -1,9 +1,11 @@
-﻿using Business.Abstract;
+﻿
+using Business.Abstract;
 using Business.Aspects.Secured;
 using Business.Repositories.UserRepository;
 using Business.ValidationRules.FluentValidation;
 using Core.Aspects.Validation;
 using Core.Business;
+using static Business.Utilities.Constants;
 using Core.Utilities.Hashing;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
@@ -39,13 +41,14 @@ namespace Business.Authentication
             if (result)
             {
                 var token = _tokenHandler.CreateToken(user, operationClaims);
-
+            
                 user.AccessToken = token.AccessToken;
                 user.ExpirationDate = token.Expiration;
                 await _userService.Update(user);
 
                 return ToAuthResponseDto(user, token, operationClaims);
             }
+
             throw new BusinessException("Kullanıcı maili ya da şifre bilgisi yanlış");
         }
 
@@ -59,6 +62,8 @@ namespace Business.Authentication
                 FirstName = user.FirstName,
                 Id = user.Id,
                 LastName = user.LastName,
+                ProfileImage = String.IsNullOrEmpty(user.ProfileImageUrl) ? null : UploadPath + user.ProfileImageUrl,
+                About=user.About,
             };
             dto.UserOperationClaims = operationClaims.Select(x => new UserOperationClaimDto
             {
