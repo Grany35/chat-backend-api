@@ -31,15 +31,14 @@ namespace Core.DataAccess.EntityFramework
         }
 
         public async Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null,
-            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null)
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
+            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
         {
             using (var context = new TContext())
             {
                 IQueryable<TEntity> queryable = context.Set<TEntity>();
-                if (include != null)
-                {
-                    queryable = include(queryable);
-                }
+                if (include != null) queryable = include(queryable);
+                if (orderBy != null) queryable = orderBy(queryable);
 
                 return filter == null
                     ? await queryable.ToListAsync()
@@ -53,10 +52,7 @@ namespace Core.DataAccess.EntityFramework
             using (var context = new TContext())
             {
                 IQueryable<TEntity> queryable = context.Set<TEntity>();
-                if (include != null)
-                {
-                    queryable = include(queryable);
-                }
+                if (include != null) queryable = include(queryable);
 
                 return await queryable.FirstOrDefaultAsync(filter);
             }
@@ -75,6 +71,16 @@ namespace Core.DataAccess.EntityFramework
                 if (orderBy != null)
                     return await orderBy(queryable).ToPaginateAsync(index, size, 0, cancellationToken);
                 return await queryable.ToPaginateAsync(index, size, 0, cancellationToken);
+            }
+        }
+
+        public IQueryable<TEntity> GetQueryable(Expression<Func<TEntity, bool>> predicate = null)
+        {
+            using (var context = new TContext())
+            {
+                return predicate == null
+                    ? context.Set<TEntity>().AsQueryable()
+                    : context.Set<TEntity>().Where(predicate).AsQueryable();
             }
         }
 

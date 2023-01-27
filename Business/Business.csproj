@@ -26,8 +26,6 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Autofac.Extras.DynamicProxy" Version="6.0.1" />
     <PackageReference Include="FluentValidation" Version="11.1.0" />
-    <PackageReference Include="Microsoft.AspNet.SignalR" Version="2.4.3" />
-    <PackageReference Include="Microsoft.AspNet.SignalR.Core" Version="2.4.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.13" />
@@ -42,6 +40,10 @@
     <Reference Include="Microsoft.AspNetCore.Hosting.Abstractions">
       <HintPath>..\..\..\..\..\..\usr\local\share\dotnet\shared\Microsoft.AspNetCore.App\6.0.12\Microsoft.AspNetCore.Hosting.Abstractions.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Hubs" />
   </ItemGroup>
 
 </Project>

@@ -73,11 +73,11 @@ namespace DataAccess.Migrations
                     b.Property<bool>("RecipientDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("RecipientFullName")
+                        .HasColumnType("text");
+
                     b.Property<int>("RecipientId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("RecipientUserName")
-                        .HasColumnType("text");
 
                     b.Property<bool>("SenderDeleted")
                         .HasColumnType("boolean");

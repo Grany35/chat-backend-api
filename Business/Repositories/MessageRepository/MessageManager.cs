@@ -1,6 +1,7 @@
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.Dtos.Message;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.Repositories.MessageRepository
 {
@@ -20,14 +21,67 @@ namespace Business.Repositories.MessageRepository
             return await _messageDal.GetAsync(x => x.Id == id);
         }
 
-        public Task<List<MessageDto>> GetMessagesForUser()
+        public async Task<List<MessageDto>> GetMessagesForUser(int userId)
         {
-            throw new NotImplementedException();
+            var messages = await _messageDal.GetAllAsync(x =>
+                    x.SenderId == userId ||
+                    x.RecipientId == userId,
+                include: i => i
+                    .Include(r => r.Recipient)
+                    .Include(s => s.Sender));
+
+
+            var messageDtos = messages.Select(x => new MessageDto
+            {
+                Id = x.Id,
+                SenderId = x.SenderId,
+                RecipientId = x.RecipientId,
+                Content = x.Content,
+                MessageSent = x.MessageSent,
+                RecipientFullName = x.Recipient.FirstName + " " + x.Recipient.LastName,
+                SenderFullName = x.Sender.FirstName + " " + x.Sender.LastName,
+                DateRead = x.DateRead,
+            }).ToList();
+
+            return messageDtos;
         }
 
-        public Task<IEnumerable<MessageDto>> GetMessageThread(int currentUserId, int recipientId)
+        public async Task<IEnumerable<MessageDto>> GetMessageThread(int currentUserId, int recipientId)
         {
-            throw new NotImplementedException();
+            var messages = await _messageDal.GetAllAsync(x =>
+                    x.RecipientId == currentUserId && x.SenderId == recipientId ||
+                    x.RecipientId == recipientId && x.SenderId == currentUserId,
+                include: i => i
+                    .Include(r => r.Recipient)
+                    .Include(s => s.Sender),
+                orderBy: x => x
+                    .OrderByDescending(o => o.MessageSent));
+
+            var unreadMessages = messages.Where(m =>
+                    m.DateRead == null &&
+                    m.RecipientId == currentUserId)
+                .ToList();
+
+            if (unreadMessages.Any())
+            {
+                foreach (var message in unreadMessages)
+                {
+                    message.DateRead = DateTime.UtcNow;
+                    await _messageDal.UpdateAsync(message);
+                }
+            }
+
+            return messages.Select(x => new MessageDto
+            {
+                Id = x.Id,
+                SenderId = x.SenderId,
+                RecipientId = x.RecipientId,
+                Content = x.Content,
+                RecipientFullName = x.Recipient.FirstName + " " + x.Recipient.LastName,
+                SenderFullName = x.Sender.FirstName + " " + x.Sender.LastName,
+                DateRead = x.DateRead,
+                MessageSent = x.MessageSent,
+            });
         }
 
         public async Task<MessageDto> CreateMessage(CreateMessageDto dto)
@@ -48,6 +102,8 @@ namespace Business.Repositories.MessageRepository
                 SenderId = dto.SenderId,
                 RecipientId = dto.RecipientId,
                 Content = dto.Content,
+                RecipientFullName = recipientUser.FirstName + " " + recipientUser.LastName,
+                SenderFullName = senderUser.FirstName + " " + senderUser.LastName,
             };
             await _messageDal.AddAsync(message);
 

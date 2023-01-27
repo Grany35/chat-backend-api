@@ -11,7 +11,8 @@ namespace Core.DataAccess
         Task DeleteAsync(T entity);
 
         Task<List<T>> GetAllAsync(Expression<Func<T, bool>> filter = null,
-            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+            Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
+            Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null);
 
         Task<T> GetAsync(Expression<Func<T, bool>> filter,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
@@ -21,6 +22,8 @@ namespace Core.DataAccess
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
             int index = 0, int size = 10,
             CancellationToken cancellationToken = default);
+        
+        IQueryable<T> GetQueryable(Expression<Func<T, bool>>? predicate = null);
 
     }
 }
