@@ -1,5 +1,6 @@
 ﻿using Core.Utilities.Result.Abstract;
 using Microsoft.AspNetCore.Http;
+using IResult = Core.Utilities.Result.Abstract.IResult;
 
 namespace Business.Abstract
 {

@@ -18,6 +18,7 @@ using Entities.Concrete;
 using Entities.Dtos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using IResult = Core.Utilities.Result.Abstract.IResult;
 
 namespace Business.Repositories.UserRepository
 {

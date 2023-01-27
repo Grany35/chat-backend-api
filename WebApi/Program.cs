@@ -48,6 +48,8 @@ builder.Services.AddDepdencyResolvers(new ICoreModule[]
     new CoreModule(),
 });
 
+builder.Services.AddSignalR();
+
 builder.Services.AddInitialUser();
 
 builder.Services.AddHttpContextAccessor();
@@ -64,6 +66,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
 app.UseStaticFiles();
 
 app.ConfigureCustomExcepitonMiddleware();

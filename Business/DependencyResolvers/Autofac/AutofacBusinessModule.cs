@@ -3,6 +3,7 @@ using Autofac.Extras.DynamicProxy;
 using Business.Abstract;
 using Business.Authentication;
 using Business.Repositories.EmailParameterRepository;
+using Business.Repositories.MessageRepository;
 using Business.Repositories.OperationClaimRepository;
 using Business.Repositories.UserOperationClaimRepository;
 using Business.Repositories.UserRepository;
@@ -28,6 +29,9 @@ namespace Business.DependencyResolvers.Autofac
 
             builder.RegisterType<EmailParameterManager>().As<IEmailParameterService>();
             builder.RegisterType<EfEmailParameterDal>().As<IEmailParameterDal>();
+            
+            builder.RegisterType<MessageManager>().As<IMessageService>();
+            builder.RegisterType<EfMessageDal>().As<IMessageDal>();
 
             builder.RegisterType<AuthManager>().As<IAuthService>();
 

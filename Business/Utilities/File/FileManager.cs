@@ -5,6 +5,7 @@ using static Business.Utilities.Constants;
 using Core.Utilities.Result.Abstract;
 using Core.Utilities.Result.Concrete;
 using Microsoft.AspNetCore.Hosting;
+using IResult = Core.Utilities.Result.Abstract.IResult;
 
 namespace Business.Concrete
 {

@@ -18,6 +18,9 @@
         public string AccessToken { get; set; }
         public DateTime ExpirationDate { get; set; }
 
+        public ICollection<Message> MessagesSent { get; set; }
+        public ICollection<Message> MessagesReceived { get; set; }
+
         public ICollection<UserOperationClaim> UserOperationClaims { get; set; }
 
         public User()

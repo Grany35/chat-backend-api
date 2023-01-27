@@ -53,6 +53,50 @@ namespace DataAccess.Migrations
                     b.ToTable("EmailParameters");
                 });
 
+            modelBuilder.Entity("Entities.Concrete.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DateRead")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("MessageSent")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("RecipientDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("RecipientId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RecipientUserName")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("SenderDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SenderFullName")
+                        .HasColumnType("text");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipientId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Messages");
+                });
+
             modelBuilder.Entity("Entities.Concrete.OperationClaim", b =>
                 {
                     b.Property<int>("Id")
@@ -147,6 +191,25 @@ namespace DataAccess.Migrations
                     b.ToTable("UserOperationClaims");
                 });
 
+            modelBuilder.Entity("Entities.Concrete.Message", b =>
+                {
+                    b.HasOne("Entities.Concrete.User", "Recipient")
+                        .WithMany("MessagesReceived")
+                        .HasForeignKey("RecipientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Entities.Concrete.User", "Sender")
+                        .WithMany("MessagesSent")
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Recipient");
+
+                    b.Navigation("Sender");
+                });
+
             modelBuilder.Entity("Entities.Concrete.UserOperationClaim", b =>
                 {
                     b.HasOne("Entities.Concrete.OperationClaim", "OperationClaim")
@@ -173,6 +236,10 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Entities.Concrete.User", b =>
                 {
+                    b.Navigation("MessagesReceived");
+
+                    b.Navigation("MessagesSent");
+
                     b.Navigation("UserOperationClaims");
                 });
 #pragma warning restore 612, 618
