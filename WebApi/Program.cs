@@ -11,7 +11,7 @@ using Entities.Concrete;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Business.Repositories;
+using Business.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,12 +24,16 @@ builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin",
-        builder => builder.WithOrigins("*")
+        builder => builder
+            .WithOrigins("http://192.168.1.105:19000")
+            .SetIsOriginAllowed((host) => true)
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials()
     );
 });
+
+builder.Services.AddSingleton<PresenceTracker>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
